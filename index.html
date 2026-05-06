@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gaius Crypto Token</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.09);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.65);
+      --accent: #6ea8fe;
+      --good: #3ddc97;
+      --bad: #ff6b6b;
+      --border: rgba(255,255,255,.14);
+      --shadow: 0 12px 40px rgba(0,0,0,.35);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 800px at 15% 10%, rgba(110,168,254,.25), transparent 55%),
+                  radial-gradient(900px 600px at 85% 20%, rgba(61,220,151,.14), transparent 55%),
+                  radial-gradient(700px 500px at 50% 85%, rgba(255,107,107,.12), transparent 55%),
+                  var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 28px 18px 10px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: .2px;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 14px 18px 40px;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card .hd {
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card .hd h2 {
+      margin: 0;
+      font-size: 15px;
+      color: rgba(255,255,255,.9);
+    }
+
+    .card .bd {
+      padding: 16px;
+    }
+
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input, select, button {
+      font: inherit;
+    }
+
+    input[type="text"], input[type="number"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      outline: none;
+    }
+
+    input[type="text"]::placeholder { color: rgba(255,255,255,.35); }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      cursor: pointer;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      transition: transform .05s ease, background .15s ease;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .btn:hover { background: rgba(255,255,255,.12); }
+    .btn:active { transform: translateY(1px); }
+    .btn.fullwidth { width: 100%; }
+
+    .btn.primary {
+      border-color: rgba(110,168,254,.45);
+      background: rgba(110,168,254,.18);
+    }
+
+    .btn.danger {
+      border-color: rgba(255,107,107,.45);
+      background: rgba(255,107,107,.16);
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 10px 14px;
+      align-items: center;
+      padding: 10px 0;
+    }
+    .k { color: var(--muted); font-size: 13px; }
+    .v { font-family: var(--mono); font-size: 13px; overflow-wrap: anywhere; }
+
+    .notice {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
+      border: 1px dashed rgba(255,255,255,.20);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .log {
+      max-height: 340px;
+      overflow: auto;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+
+    .log .item {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .log .item:last-child { border-bottom: none; }
+
+    .tag {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.16);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .tag.good { border-color: rgba(61,220,151,.45); color: rgba(61,220,151,.95); }
+    .tag.bad { border-color: rgba(255,107,107,.45); color: rgba(255,107,107,.95); }
+    .tag.info { border-color: rgba(110,168,254,.45); color: rgba(110,168,254,.98); }
+
+    .foot {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 18px 30px;
+      color: rgba(255,255,255,.55);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .spacer { display:block; width:100%; }
+    .spacer-xs { height: 10px; }
+    .spacer-sm { height: 12px; }
+    .spacer-md { height: 14px; }
+    .spacer-lg { height: 16px; }
+
+    .card.subtle {
+      background: rgba(0,0,0,.18);
+      box-shadow: none;
+    }
+    .card.subtle .hd { border-bottom: 1px solid rgba(255,255,255,.10); }
+    .card.subtle .bd { padding: 12px 12px 14px; }
+
+    .row.space-between { justify-content: space-between; }
+
+    .notice .subnote { margin-top: 6px; }
+    #balances { display:grid; gap:10px; }
+
+    .mono { font-family: var(--mono); }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">
+      <h1>Gaius's Crypto Token 💳</h1>
+      <div class="badge">No blockchain • Runs in your browser • Shareable via internet hosting</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="hd">
+        <h2>Token Settings + Transfers</h2>
+        <div class="tag info" id="statusTag">READY</div>
+      </div>
+      <div class="bd">
+        <div class="grid2">
+          <div class="field">
+            <label for="tokenName">Token name</label>
+            <input id="tokenName" type="text" value="DemoCoin" placeholder="DemoCoin" />
+          </div>
+          <div class="field">
+            <label for="tokenSymbol">Symbol</label>
+            <input id="tokenSymbol" type="text" value="DMC" maxlength="10" placeholder="DMC" />
+          </div>
+        </div>
+
+        <div class="spacer spacer-sm"></div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="tokenDecimals">Decimals (0-18)</label>
+            <input id="tokenDecimals" type="number" value="0" min="0" max="18" placeholder="0" />
+          </div>
+          <div class="field">
+            <label for="tokenSupply">Total supply (initial mint to Admin)</label>
+            <input id="tokenSupply" type="number" value="1000000" min="1" step="any" placeholder="1000000" />
+          </div>
+        </div>
+
+        <div class="spacer spacer-md"></div>
+
+        <div class="row">
+          <button type="button" class="btn primary" id="btnInit">Initialize / Mint</button>
+          <button type="button" class="btn danger" id="btnReset">Reset Demo Ledger</button>
+        </div>
+
+        <div class="spacer spacer-sm"></div>
+
+        <div class="notice">
+          <div><b>How it works:</b> This is a local in-browser ledger (stored in <span class="mono">localStorage</span>). When you host the page on the internet, visitors can interact and share state in their own browser.</div>
+          <div class="subnote"><b>Important:</b> This does NOT create a real on-chain ERC-20 token.</div>
+        </div>
+
+        <div class="spacer spacer-lg"></div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="fromAddr">From (address / label)</label>
+            <input id="fromAddr" type="text" value="admin" placeholder="e.g., admin" />
+          </div>
+          <div class="field">
+            <label for="toAddr">To (address / label)</label>
+            <input id="toAddr" type="text" value="alice" placeholder="e.g., alice" />
+          </div>
+        </div>
+
+        <div class="spacer spacer-sm"></div>
+
+        <div class="grid2">
+          <div class="field">
+            <label for="amount">Amount</label>
+            <input id="amount" type="number" value="50" min="0" step="any" placeholder="50" />
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <button type="button" class="btn primary fullwidth" id="btnTransfer">Transfer</button>
+          </div>
+        </div>
+
+        <div class="spacer spacer-lg"></div>
+
+        <div class="card subtle">
+          <div class="hd">
+            <h2>Recent Transfers</h2>
+            <div class="tag" id="txCount">0 tx</div>
+          </div>
+          <div class="bd">
+            <div class="log" id="log"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="card">
+      <div class="hd">
+        <h2>Ledger / Balances</h2>
+        <div class="tag" id="ownerTag">OWNER: admin</div>
+      </div>
+      <div class="bd">
+        <div class="kv">
+          <div class="k">Token Address</div>
+          <div class="v" id="fakeAddress">—</div>
+
+          <div class="k">Total Supply</div>
+          <div class="v" id="totalSupply">—</div>
+
+          <div class="k">Decimals</div>
+          <div class="v" id="decimals">—</div>
+
+          <div class="k">Admin Balance</div>
+          <div class="v" id="adminBalance">—</div>
+        </div>
+
+        <div class="spacer spacer-sm"></div>
+
+        <div class="notice">
+          <div><b>Tip:</b> Add any label in the “From/To” fields. Balances will be tracked per label.</div>
+          <div class="subnote">Balances persist in this browser tab’s storage.</div>
+        </div>
+
+        <div class="spacer spacer-md"></div>
+
+        <div class="row space-between">
+          <div class="tag" id="balanceTag">BALANCES</div>
+          <button type="button" class="btn" id="btnExport" title="Export ledger to a JSON file">Export JSON</button>
+        </div>
+
+        <div class="spacer spacer-xs"></div>
+
+        <div id="balances"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="foot">
+    This is a <b>client-side demo</b>. If you need a token that works with wallets (Metamask), you must deploy a contract on a blockchain.
+  </div>
+
+  <script>
+    // --- Fake token ledger in browser (localStorage) ---
+
+    const STORAGE_KEY = 'demoTokenLedger:v1';
+
+    const $ = (id) => document.getElementById(id);
+
+    function nowIso() {
+      return new Date().toISOString();
+    }
+
+    function randomHex(bytes = 20) {
+      const arr = new Uint8Array(bytes);
+      crypto.getRandomValues(arr);
+      return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function normalizeSymbol(s) {
+      return String(s ?? '').trim().toUpperCase();
+    }
+
+    function clampDecimals(d) {
+      d = Number(d);
+      if (!Number.isFinite(d)) return 0;
+      d = Math.max(0, Math.min(18, Math.trunc(d)));
+      return d;
+    }
+
+    function buildStepString(decimals) {
+      return decimals === 0 ? '1' : '0.' + '0'.repeat(decimals - 1) + '1';
+    }
+
+    function fmtInt(n) {
+      if (!Number.isFinite(n)) return '0';
+      return String(Math.trunc(n));
+    }
+
+    function formatAmount(amountUnits, decimals) {
+      if (!Number.isFinite(amountUnits)) return '0';
+      const sign = amountUnits < 0 ? '-' : '';
+      const abs = String(Math.abs(Math.trunc(amountUnits)));
+      if (decimals === 0) return sign + abs;
+      const padded = abs.padStart(decimals + 1, '0');
+      const whole = padded.slice(0, -decimals);
+      let fraction = padded.slice(-decimals).replace(/0+$/, '');
+      return sign + whole + (fraction ? '.' + fraction : '');
+    }
+
+    function getLedger() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch {
+        return null;
+      }
+    }
+
+    function setLedger(ledger) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(ledger));
+      } catch (err) {
+        console.warn('Unable to save ledger to localStorage', err);
+      }
+    }
+
+    function blankLedger() {
+      return {
+        initializedAt: null,
+        token: {
+          name: 'DemoCoin',
+          symbol: 'DMC',
+          decimals: 0,
+          totalSupply: 0,
+          fakeAddress: '0x' + randomHex(20)
+        },
+        balances: {}, // label -> integer balance (in smallest units)
+        transfers: [] // {from,to,amount,ts}
+      };
+    }
+
+    function computeUnits(amountHuman) {
+      if (!ledger || !ledger.token) return null;
+      return unitsFromAmount(amountHuman, ledger.token.decimals);
+    }
+
+    function unitsFromAmount(amountHuman, decimals) {
+      const a = Number(amountHuman);
+      if (!Number.isFinite(a) || a < 0) return null;
+      const scaled = a * Math.pow(10, decimals);
+      if (!Number.isFinite(scaled) || !Number.isInteger(scaled)) return null;
+      return scaled;
+    }
+
+    function updateDecimalSteps() {
+      const decimals = clampDecimals($('tokenDecimals').value);
+      const step = buildStepString(decimals);
+      $('amount').step = step;
+      $('tokenSupply').step = step;
+    }
+
+    let ledger = getLedger();
+
+    function renderAll() {
+      const statusTag = $('statusTag');
+
+      if (!ledger) {
+        statusTag.textContent = 'NOT INITIALIZED';
+        statusTag.className = 'tag bad';
+        $('fakeAddress').textContent = '—';
+        $('totalSupply').textContent = '—';
+        $('decimals').textContent = '—';
+        $('adminBalance').textContent = '—';
+        $('txCount').textContent = '0 tx';
+        $('log').innerHTML = '';
+        $('balances').innerHTML = '';
+        return;
+      }
+
+      statusTag.textContent = 'READY';
+      statusTag.className = 'tag info';
+
+      const decimals = ledger.token.decimals;
+      $('fakeAddress').textContent = ledger.token.fakeAddress;
+      $('totalSupply').textContent = formatAmount(ledger.token.totalSupply, decimals);
+      $('decimals').textContent = String(decimals);
+
+      const adminBal = ledger.balances['admin'] || 0;
+      $('adminBalance').textContent = formatAmount(adminBal, decimals);
+
+      $('txCount').textContent = `${ledger.transfers.length} tx`;
+
+      // log
+      const log = $('log');
+      log.innerHTML = '';
+      const slice = ledger.transfers.slice().reverse().slice(0, 40);
+      for (const t of slice) {
+        const item = document.createElement('div');
+        item.className = 'item';
+        const left = document.createElement('div');
+        left.innerHTML = `<span class="mono">${escapeHtml(t.from)}</span> → <span class="mono">${escapeHtml(t.to)}</span>`;
+        const rightTag = document.createElement('div');
+        const sign = t.from === 'admin' ? 'out' : (t.to === 'admin' ? 'in' : 'x');
+        if (sign === 'in') rightTag.className = 'tag good';
+        else if (sign === 'out') rightTag.className = 'tag bad';
+        else rightTag.className = 'tag';
+        rightTag.textContent = `${formatAmount(t.amount, ledger.token.decimals)} tokens`;
+
+        item.appendChild(left);
+        item.appendChild(rightTag);
+
+        item.title = t.ts;
+        log.appendChild(item);
+      }
+
+      // balances
+      const balances = $('balances');
+      balances.innerHTML = '';
+
+      const entries = Object.entries(ledger.balances)
+        .filter(([,v]) => Number(v) !== 0)
+        .sort((a,b) => Number(b[1]) - Number(a[1]));
+
+      if (entries.length === 0) {
+        const div = document.createElement('div');
+        div.className = 'notice';
+        div.textContent = 'No balances yet. Click “Initialize / Mint” first.';
+        balances.appendChild(div);
+        return;
+      }
+
+      for (const [label, bal] of entries) {
+        const card = document.createElement('div');
+        card.style.border = '1px solid rgba(255,255,255,.12)';
+        card.style.borderRadius = '12px';
+        card.style.padding = '10px 12px';
+        card.style.background = 'rgba(0,0,0,.18)';
+
+        const top = document.createElement('div');
+        top.style.display = 'flex';
+        top.style.justifyContent = 'space-between';
+        top.style.gap = '10px';
+        top.style.alignItems = 'baseline';
+
+        const name = document.createElement('div');
+        name.innerHTML = `<b>${escapeHtml(label)}</b>`;
+
+        const value = document.createElement('div');
+        value.className = 'mono';
+        value.textContent = `${formatAmount(bal, ledger.token.decimals)} tokens`;
+
+        top.appendChild(name);
+        top.appendChild(value);
+
+        card.appendChild(top);
+        balances.appendChild(card);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function initLedger() {
+      const name = String($('tokenName').value || 'DemoCoin');
+      const symbol = normalizeSymbol($('tokenSymbol').value || 'DMC');
+      const decimals = clampDecimals($('tokenDecimals').value);
+      const supplyHuman = $('tokenSupply').value;
+      const supplyUnits = unitsFromAmount(supplyHuman, decimals);
+      if (!Number.isFinite(supplyUnits) || supplyUnits <= 0) {
+        alert(`Total supply must be a positive number with at most ${decimals} decimal${decimals === 1 ? '' : 's'}`);
+        return;
+      }
+
+      ledger = blankLedger();
+      ledger.initializedAt = nowIso();
+      ledger.token.name = name;
+      ledger.token.symbol = symbol || 'DMC';
+      ledger.token.decimals = decimals;
+      ledger.token.totalSupply = supplyUnits;
+      ledger.balances = { admin: ledger.token.totalSupply };
+      ledger.transfers = [];
+      setLedger(ledger);
+      renderAll();
+    }
+
+    function resetLedger() {
+      if (!confirm('Reset the demo ledger in this browser?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+      ledger = null;
+      renderAll();
+    }
+
+    function transfer() {
+      if (!ledger) {
+        alert('Initialize the token first.');
+        return;
+      }
+
+      const from = String($('fromAddr').value || '').trim();
+      const to = String($('toAddr').value || '').trim();
+      const amountHuman = $('amount').value;
+
+      if (!from || !to) {
+        alert('From and To are required.');
+        return;
+      }
+
+      const units = computeUnits(amountHuman);
+      if (units === null || units <= 0) {
+        alert(`Amount must be a positive number with at most ${ledger.token.decimals} decimal${ledger.token.decimals === 1 ? '' : 's'}`);
+        return;
+      }
+
+      const fromBal = Number(ledger.balances[from] || 0);
+      if (fromBal < units) {
+        alert(`Insufficient balance. ${from} has ${fromBal} units, needs ${units}.`);
+        return;
+      }
+
+      ledger.balances[from] = fromBal - units;
+      ledger.balances[to] = Number(ledger.balances[to] || 0) + units;
+
+      ledger.transfers.push({ from, to, amount: units, ts: nowIso() });
+      // keep it small
+      if (ledger.transfers.length > 500) ledger.transfers = ledger.transfers.slice(-500);
+
+      setLedger(ledger);
+      renderAll();
+    }
+
+    function exportJSON() {
+      if (!ledger) {
+        alert('No ledger to export.');
+        return;
+      }
+      const blob = new Blob([JSON.stringify(ledger, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `demo-token-ledger-${ledger.token.symbol}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    // Wire up UI
+    $('btnInit').addEventListener('click', initLedger);
+    $('btnReset').addEventListener('click', resetLedger);
+    $('btnTransfer').addEventListener('click', transfer);
+    $('btnExport').addEventListener('click', exportJSON);
+    $('tokenDecimals').addEventListener('input', updateDecimalSteps);
+
+    // Auto-load existing
+    ledger = ledger || null;
+    updateDecimalSteps();
+    renderAll();
+  </script>
+</body>
+</html>
+
